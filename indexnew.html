@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HDI Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="hero">
+    <h1>🌍 Human Development Index Predictor</h1>
+    <p>Estimate a country's HDI score and category from life expectancy,
+       schooling, and income data using a trained Linear Regression model.</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+
+      {% if errors %}
+      <div class="errors">
+        <strong>Please fix the following:</strong>
+        <ul>
+          {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <form action="{{ url_for('predict') }}" method="POST">
+        <div class="form-grid">
+
+          <div class="field full">
+            <label for="country">Country (optional — auto-fills fields below)</label>
+            <select id="country" name="country">
+              <option value="Custom Input">-- Custom input --</option>
+              {% for c in countries %}
+                <option value="{{ c }}">{{ c }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="Life_Expectancy">Life Expectancy (years)</label>
+            <input type="number" step="0.1" id="Life_Expectancy" name="Life_Expectancy"
+                   value="{{ form.Life_Expectancy if form else '' }}" required>
+          </div>
+
+          <div class="field">
+            <label for="Mean_Years_Schooling">Mean Years of Schooling</label>
+            <input type="number" step="0.1" id="Mean_Years_Schooling" name="Mean_Years_Schooling"
+                   value="{{ form.Mean_Years_Schooling if form else '' }}" required>
+          </div>
+
+          <div class="field">
+            <label for="Expected_Years_Schooling">Expected Years of Schooling</label>
+            <input type="number" step="0.1" id="Expected_Years_Schooling" name="Expected_Years_Schooling"
+                   value="{{ form.Expected_Years_Schooling if form else '' }}" required>
+          </div>
+
+          <div class="field">
+            <label for="GNI_Per_Capita">GNI Per Capita (USD)</label>
+            <input type="number" step="1" id="GNI_Per_Capita" name="GNI_Per_Capita"
+                   value="{{ form.GNI_Per_Capita if form else '' }}" required>
+          </div>
+
+        </div>
+
+        <button type="submit" class="submit">Predict HDI Score</button>
+      </form>
+    </div>
+  </main>
+
+  <footer>Built with Flask + scikit-learn Linear Regression</footer>
+
+  <script>
+    // Auto-fill the form when a country is selected from the dropdown
+    const select = document.getElementById('country');
+    select.addEventListener('change', async () => {
+      const name = select.value;
+      if (name === 'Custom Input') return;
+      try {
+        const res = await fetch(`/country/${encodeURIComponent(name)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        document.getElementById('Life_Expectancy').value = data.Life_Expectancy;
+        document.getElementById('Mean_Years_Schooling').value = data.Mean_Years_Schooling;
+        document.getElementById('Expected_Years_Schooling').value = data.Expected_Years_Schooling;
+        document.getElementById('GNI_Per_Capita').value = data.GNI_Per_Capita;
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

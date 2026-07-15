@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediction Result - HDI Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="hero">
+    <h1>📊 Prediction Result</h1>
+    <p>{{ country }}</p>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <div class="result-score">
+        <div class="score">{{ score }}</div>
+        <span class="badge {{ category.replace(' ', '-') }}">{{ category }} Human Development</span>
+      </div>
+
+      <table class="inputs">
+        <tr><td>Life Expectancy</td><td>{{ inputs.Life_Expectancy }} years</td></tr>
+        <tr><td>Mean Years of Schooling</td><td>{{ inputs.Mean_Years_Schooling }}</td></tr>
+        <tr><td>Expected Years of Schooling</td><td>{{ inputs.Expected_Years_Schooling }}</td></tr>
+        <tr><td>GNI Per Capita</td><td>${{ "{:,.0f}".format(inputs.GNI_Per_Capita) }}</td></tr>
+      </table>
+
+      <a class="back-link" href="{{ url_for('home') }}">&larr; Make another prediction</a>
+    </div>
+  </main>
+
+  <footer>Predicted using a Linear Regression model trained on HDI data</footer>
+</body>
+</html>
